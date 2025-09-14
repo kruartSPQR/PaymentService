@@ -6,6 +6,8 @@ import com.innowise.PaymentService.dto.SumResult;
 import com.innowise.PaymentService.entity.Payment;
 import com.innowise.PaymentService.mapper.PaymentMapper;
 import com.innowise.PaymentService.repository.PaymentRepository;
+import com.innowise.common.exception.ResourceNotFoundCustomException;
+import com.innowise.common.exception.ExternalApiResponseCustomException;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -31,14 +33,19 @@ public class PaymentService {
         Payment payment = paymentMapper.toEntity(dto);
 
         setStatus(payment);
+        payment.setTimestamp(LocalDateTime.now());
 
         Payment savedPayment = paymentRepository.save(payment);
-
+//        System.out.println(savedPayment.getAmount().getClass().toString());
         return paymentMapper.toDto(savedPayment);
     }
 
     public List<PaymentResponseDto> getPaymentsByOrderId(Long orderId) {
         List<Payment> payments = paymentRepository.findAllByOrderId(orderId);
+
+        if (payments.isEmpty()) {
+            throw new ResourceNotFoundCustomException("Payments for order " + orderId + " not found");
+        }
 
         return payments.stream()
                 .map(payment -> paymentMapper.toDto(payment))
@@ -48,6 +55,10 @@ public class PaymentService {
     public List<PaymentResponseDto> getPaymentsByUserId(Long userId) {
         List<Payment> payments = paymentRepository.findAllByUserId(userId);
 
+        if (payments.isEmpty()) {
+            throw new ResourceNotFoundCustomException("Payments for user " + userId + " not found");
+        }
+
         return payments.stream()
                 .map(payment -> paymentMapper.toDto(payment))
                 .toList();
@@ -56,6 +67,9 @@ public class PaymentService {
     public List<PaymentResponseDto> getPaymentsByStatus(String status) {
         List<Payment> payments = paymentRepository.findAllByStatus(status);
 
+        if (payments.isEmpty()) {
+            throw new ResourceNotFoundCustomException("Payments with status " + status + " not found");
+        }
         return payments.stream()
                 .map(payment -> paymentMapper.toDto(payment))
                 .toList();
@@ -83,7 +97,7 @@ public class PaymentService {
                 .bodyToMono(String.class)
                 .block();
           if(response == null){
-              throw new RuntimeException("Could not get response from Web Client");
+              throw new ExternalApiResponseCustomException("Could not get response from Web Client");
           }
           return Integer.parseInt(response.trim());
     }
