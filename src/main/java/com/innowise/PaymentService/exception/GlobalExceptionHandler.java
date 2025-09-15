@@ -2,6 +2,7 @@ package com.innowise.PaymentService.exception;
 
 import com.innowise.common.exception.DuplicateResourceCustomException;
 import com.innowise.common.exception.ExternalApiResponseCustomException;
+import com.innowise.common.exception.InvalidDateRangeCustomException;
 import com.innowise.common.exception.ResourceNotFoundCustomException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +21,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> duplicateResourceCustomException(DuplicateResourceCustomException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
     }
+
     @ExceptionHandler(ExternalApiResponseCustomException.class)
     public ResponseEntity<String> externalApiResponseCustomException(ExternalApiResponseCustomException exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.FAILED_DEPENDENCY);
+    }
+
+    @ExceptionHandler(InvalidDateRangeCustomException.class)
+    public ResponseEntity<String> invalidDateRangeCustomException(InvalidDateRangeCustomException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

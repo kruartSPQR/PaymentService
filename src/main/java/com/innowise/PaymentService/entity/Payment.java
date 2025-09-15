@@ -8,16 +8,14 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Data
 @Document(collection = "payments")
 public class Payment {
 
     @Id
-    private String id ;
+    private String id;
     @Indexed
     private Long orderId;
     @Indexed

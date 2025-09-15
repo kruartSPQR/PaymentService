@@ -21,7 +21,7 @@ public class PaymentEventConsumer {
     PaymentProducer paymentProducer;
 
     @KafkaListener(topics = "create-order-topic", groupId = "payment-group")
-    public void handleOrderCreated(OrderCreatedEvent event, Acknowledgment ack){
+    public void handleOrderCreated(OrderCreatedEvent event, Acknowledgment ack) {
         PaymentRequestDto dto = new PaymentRequestDto();
         dto.setOrderId(event.getOrderId());
         dto.setUserId(event.getUserId());

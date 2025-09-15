@@ -75,7 +75,6 @@ public class PaymentServiceIntegrationTest {
         WebClient.RequestHeadersSpec requestHeadersSpec = Mockito.mock(WebClient.RequestHeadersSpec.class);
         WebClient.ResponseSpec responseSpec = Mockito.mock(WebClient.ResponseSpec.class);
 
-        // Now set up the mock chain
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.uri(anyString())).thenReturn(requestHeadersSpec);
         when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
@@ -143,6 +142,7 @@ public class PaymentServiceIntegrationTest {
             paymentService.getPaymentsByStatus("PENDING");
         });
     }
+
     @Test
     @DirtiesContext
     void shouldCreatePaymentWithSuccessStatus() {

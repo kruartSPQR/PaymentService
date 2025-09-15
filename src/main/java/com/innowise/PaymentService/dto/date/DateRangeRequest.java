@@ -1,6 +1,5 @@
 package com.innowise.PaymentService.dto.date;
 
-import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;

@@ -4,12 +4,17 @@ import com.innowise.PaymentService.dto.PaymentRequestDto;
 import com.innowise.PaymentService.dto.PaymentResponseDto;
 import com.innowise.PaymentService.dto.date.DateRangeRequest;
 import com.innowise.PaymentService.service.PaymentService;
+import com.innowise.common.exception.InvalidDateRangeCustomException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -46,12 +51,12 @@ public class PaymentController {
     public ResponseEntity<BigDecimal> getTotalSumOfPaymentsForDatePeriod(
             @RequestBody @Valid DateRangeRequest dateRange) {
 
-//        if (dateRange.getStartDate().isAfter(dateRange.getEndDate())) {
-//            throw new InvalidDateRangeException("Start date must be before end date");
-//        }
-//        if (dateRange.getStartDate().isAfter(LocalDateTime.now())) {
-//            throw new InvalidDateRangeException("Start date cannot be in the future");
-//        }
+        if (dateRange.getStartDate().isAfter(dateRange.getEndDate())) {
+            throw new InvalidDateRangeCustomException("Start date must be before end date");
+        }
+        if (dateRange.getStartDate().isAfter(LocalDateTime.now())) {
+            throw new InvalidDateRangeCustomException("Start date cannot be in the future");
+        }
 
         return new ResponseEntity<>(
                 paymentService.getTotalSumOfPaymentsForDatePeriod(
