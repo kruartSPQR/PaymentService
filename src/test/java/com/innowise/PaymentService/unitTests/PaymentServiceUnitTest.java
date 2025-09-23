@@ -6,6 +6,7 @@ import com.innowise.PaymentService.dto.SumResult;
 import com.innowise.PaymentService.entity.Payment;
 import com.innowise.PaymentService.mapper.PaymentMapper;
 import com.innowise.PaymentService.repository.PaymentRepository;
+import com.innowise.PaymentService.service.AbsoluteRandomNumber;
 import com.innowise.PaymentService.service.PaymentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +40,7 @@ public class PaymentServiceUnitTest {
     private PaymentMapper paymentMapper;
 
     @Mock
-    private WebClient webClient;
+    private AbsoluteRandomNumber absoluteRandomNumber;
 
     @InjectMocks
     private PaymentService paymentService;
@@ -83,7 +84,7 @@ public class PaymentServiceUnitTest {
 
     @Test
     void testCreatePaymentSuccess() {
-        mockWebClientResponse("2");
+        when(absoluteRandomNumber.getAbsoluteRandomNumber()).thenReturn(2);
 
         when(paymentMapper.toEntity(paymentRequestDto)).thenReturn(paymentEntity);
         when(paymentRepository.save(any(Payment.class))).thenReturn(paymentEntity);
@@ -103,7 +104,7 @@ public class PaymentServiceUnitTest {
 
     @Test
     void testCreatePaymentFailed() {
-        mockWebClientResponse("7");
+        when(absoluteRandomNumber.getAbsoluteRandomNumber()).thenReturn(7);
 
         when(paymentMapper.toEntity(paymentRequestDto)).thenReturn(paymentEntity);
         when(paymentRepository.save(any(Payment.class))).thenReturn(paymentEntity);
@@ -121,7 +122,7 @@ public class PaymentServiceUnitTest {
 
     @Test
     void testCreatePaymentWithWebClientFailure() {
-        mockWebClientResponse(null);
+        when(absoluteRandomNumber.getAbsoluteRandomNumber()).thenReturn(null);
 
         when(paymentMapper.toEntity(paymentRequestDto)).thenReturn(paymentEntity);
 
@@ -196,17 +197,5 @@ public class PaymentServiceUnitTest {
         assertEquals(BigDecimal.ZERO, result);
 
         verify(paymentRepository).getTotalSumOfPaymentsForDatePeriod(startDate, endDate);
-    }
-
-    private void mockWebClientResponse(String response) {
-        WebClient.RequestHeadersUriSpec uriSpec = mock(WebClient.RequestHeadersUriSpec.class);
-        WebClient.RequestHeadersSpec headerSpec = mock(WebClient.RequestHeadersSpec.class);
-        WebClient.ResponseSpec responseSpec = mock(WebClient.ResponseSpec.class);
-        Mono<String> mono = response != null ? Mono.just(response) : Mono.empty();
-
-        when(webClient.get()).thenReturn(uriSpec);
-        when(uriSpec.uri(anyString())).thenReturn(headerSpec);
-        when(headerSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.bodyToMono(String.class)).thenReturn(mono);
     }
 }

@@ -20,9 +20,9 @@ import java.util.List;
 @AllArgsConstructor
 public class PaymentService {
 
-    private PaymentRepository paymentRepository;
-    private PaymentMapper paymentMapper;
-    private WebClient webClient;
+    private final PaymentRepository paymentRepository;
+    private final PaymentMapper paymentMapper;
+    private final AbsoluteRandomNumber absoluteRandomNumber;
 
     public PaymentResponseDto createPayment(PaymentRequestDto dto) {
         Payment payment = paymentMapper.toEntity(dto);
@@ -31,7 +31,6 @@ public class PaymentService {
         payment.setTimestamp(LocalDateTime.now());
 
         Payment savedPayment = paymentRepository.save(payment);
-//        System.out.println(savedPayment.getAmount().getClass().toString());
         return paymentMapper.toDto(savedPayment);
     }
 
@@ -76,22 +75,10 @@ public class PaymentService {
     }
 
     public void setStatus(Payment payment) {
-        if (getAbsoluteRandomNumber() % 2 == 0) {
+        if (absoluteRandomNumber.getAbsoluteRandomNumber() % 2 == 0) {
             payment.setStatus("SUCCESS");
         } else {
             payment.setStatus("FAILED");
         }
-    }
-
-    public Integer getAbsoluteRandomNumber() {
-        String response = webClient.get()
-                .uri("https://www.random.org/integers/?num=1&min=1&max=32767&col=1&base=10&format=plain&rnd=new")
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
-        if (response == null) {
-            throw new ExternalApiResponseCustomException("Could not get response from Web Client");
-        }
-        return Integer.parseInt(response.trim());
     }
 }
