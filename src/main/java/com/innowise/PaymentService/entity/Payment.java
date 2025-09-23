@@ -1,0 +1,30 @@
+package com.innowise.PaymentService.entity;
+
+import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@Data
+@Document(collection = "payments")
+public class Payment {
+
+    @Id
+    private String id;
+    @Indexed
+    private Long orderId;
+    @Indexed
+    private Long userId;
+
+    private String status = "PENDING";
+    @Indexed
+    private LocalDateTime timestamp;
+    @Field(targetType = FieldType.DECIMAL128)
+    private BigDecimal amount;
+
+}
